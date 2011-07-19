@@ -5,6 +5,7 @@ package
 	
 	import flash.display.Sprite;
 	import flash.text.TextField;
+	import flash.text.TextFieldType;
 	
 	/**
 	 * @author Austin 
@@ -38,6 +39,7 @@ package
 			var clienInput:TextField = new TextField();
 			clienInput.text = date.getTime().toString();
 			clienInput.x = 60;
+			clienInput.height = 20;
 			addChild(clienInput);
 			
 			serverLabel = new TextField();
@@ -46,9 +48,12 @@ package
 			addChild(serverLabel);
 			
 			var serverInput:TextField = new TextField();
-			serverInput.text = date.getTime().toString();
+			serverInput.type = TextFieldType.INPUT;
+			serverInput.text = "";
 			serverInput.y = 30;
 			serverInput.x = 60;
+			serverInput.border = true;
+			serverInput.height = 20,
 			addChild(serverInput);
 			
 			//notify
