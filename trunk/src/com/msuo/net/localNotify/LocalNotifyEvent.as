@@ -12,9 +12,16 @@ package com.msuo.net.localNotify
 		//==========================================================================
 		//  Class variables
 		//==========================================================================
-		
+		/**
+		 * 收到字符串类型值时派发
+		 * 收到的字符串从event.data中取得 
+		 */		
 		static public const TEXT_INFO:String = "textInfo";
 		
+		/**
+		 * 收到一个对象或类实例时派发
+		 * 收到的数据从event.data中取得 
+		 */		
 		static public const OBJECT_INFO:String = "objectInfo";
 		
 		static public const EVENT_INFO:String = "eventInfo";

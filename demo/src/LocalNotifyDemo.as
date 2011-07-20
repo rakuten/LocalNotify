@@ -3,8 +3,12 @@ package
 	import com.msuo.net.localNotify.LocalNotify;
 	import com.msuo.net.localNotify.LocalNotifyEvent;
 	
+	import flash.display.Shape;
+	import flash.display.SimpleButton;
 	import flash.display.Sprite;
+	import flash.events.MouseEvent;
 	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFieldType;
 	
 	/**
@@ -17,7 +21,9 @@ package
 		//==========================================================================
 		//  Variables
 		//==========================================================================
-		private var serverLabel:TextField;
+		private var remoteInput:TextField
+		
+		private var localInput:TextField;
 		
 		private var localNotify:LocalNotify;
 		
@@ -30,52 +36,79 @@ package
 		 */
 		public function LocalNotifyDemo()
 		{
-			//ui
+			initDisplay();
+			initNotify();
+		}
+		
+		//==========================================================================
+		//  Methods
+		//==========================================================================
+		private function initDisplay():void
+		{
 			var date:Date = new Date;
-			var clientLabel:TextField = new TextField();
-			clientLabel.text = "Local ID:"
-			addChild(clientLabel);
+			var localLabel:TextField = new TextField();
+			localLabel.text = "Local ID:"
+			addChild(localLabel);
 			
-			var clienInput:TextField = new TextField();
-			clienInput.text = date.getTime().toString();
-			clienInput.x = 60;
-			clienInput.height = 20;
-			addChild(clienInput);
+			localInput = new TextField();
+			localInput.text = date.getTime().toString();
+			localInput.x = 60;
+			localInput.height = 20;
+			addChild(localInput);
 			
-			serverLabel = new TextField();
-			serverLabel.text = "Remote ID:";
-			serverLabel.y = 30;
-			addChild(serverLabel);
+			var remoteLabel:TextField = new TextField();
+			remoteLabel.text = "Remote ID:";
+			remoteLabel.y = 30;
+			addChild(remoteLabel);
 			
-			var serverInput:TextField = new TextField();
-			serverInput.type = TextFieldType.INPUT;
-			serverInput.text = "";
-			serverInput.y = 30;
-			serverInput.x = 60;
-			serverInput.border = true;
-			serverInput.height = 20,
-			addChild(serverInput);
+			remoteInput = new TextField();
+			remoteInput.type = TextFieldType.INPUT;
+			remoteInput.text = "";
+			remoteInput.y = 30;
+			remoteInput.x = 60;
+			remoteInput.border = true;
+			remoteInput.height = 20,
+				addChild(remoteInput);
 			
-			//notify
+			var startBtn:Sprite = new Sprite();
+			startBtn.buttonMode = true;
+			startBtn.graphics.beginFill(0xff0000);
+			startBtn.graphics.drawRect(0, 0, 50, 25);
+			startBtn.graphics.endFill();
+			startBtn.x = 200;
+			startBtn.y = 30;
+			startBtn.addEventListener(MouseEvent.CLICK, btn_clickHandler);
+			addChild(startBtn);
+		}
+		
+		private function initNotify():void
+		{
 			localNotify = new LocalNotify();
 			localNotify.addEventListener(LocalNotifyEvent.TEXT_INFO, onTextInfoHandler);
 			localNotify.addEventListener(LocalNotifyEvent.OBJECT_INFO, onObjectInfoHandler);
 			localNotify.addEventListener(LocalNotifyEvent.EVENT_INFO, onEventInfoHandler);
-			localNotify.start(clienInput.text);
+			localNotify.start(localInput.text);
 		}
 		
 		//==========================================================================
 		//  Event Handlers
 		//==========================================================================
+		private function btn_clickHandler(event:MouseEvent):void
+		{
+			localNotify.sendText(remoteInput.text, "testString");
+			localNotify.sendObject(remoteInput.text, {label1:"test",obj:[1,2]});
+//			localNotify.sendEvent(remoteInput.text, 
+			
+		}
 		
 		private function onTextInfoHandler(event:LocalNotifyEvent):void
 		{
-			
+			trace(event.data)
 		}
 		
 		private function onObjectInfoHandler(event:LocalNotifyEvent):void
 		{
-			
+			trace(event.data)
 		}
 		
 		private function onEventInfoHandler(event:LocalNotifyEvent):void

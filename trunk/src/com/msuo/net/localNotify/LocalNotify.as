@@ -8,7 +8,7 @@ package com.msuo.net.localNotify
 	import flash.utils.getQualifiedClassName;
 	
 	/**
-	 * 收到object对象时派发
+	 * 收到对象或类实例时派发
 	 */
 	[Event(name="objectInfo", type="com.msuo.net.localNotify.LocalNotifyEvent")]
 	
@@ -49,7 +49,7 @@ package com.msuo.net.localNotify
 		/**
 		 * 是否显示debug信息
 		 */
-		public var debug:Boolean = false;
+		public var showDebugInfo:Boolean = false;
 		
 		private var serverLC:LocalConnection;
 		private var serverId:String;
@@ -105,18 +105,18 @@ package com.msuo.net.localNotify
 		
 		/**
 		 * 发送一段文本
-		 * @param cliendId
+		 * @param id 另一头侦听者的id
 		 * @param msg
 		 *
 		 */
-		public function sendText(cliendId:String, msg:String):void
+		public function sendText(id:String, msg:String):void
 		{
-			sendHandler(cliendId, "onGetMsgHandler", msg, serverId, null);
+			sendHandler(id, "onGetMsgHandler", msg, serverId, null);
 		}
 		
 		/**
 		 * 发送一个对象或类实例
-		 * @param id
+		 * @param id 另一头侦听者的id
 		 * @param item
 		 * @param param
 		 *
@@ -130,7 +130,7 @@ package com.msuo.net.localNotify
 		
 		/**
 		 * 发送一个事件
-		 * @param id
+		 * @param id 另一头侦听者的id
 		 * @param type 等同于event.type的值
 		 * @param item 可以附带的event的变量(可以是值对象或是构造时不带变量的类)
 		 *
@@ -183,7 +183,7 @@ package com.msuo.net.localNotify
 		{
 			if (args[1] != "preRegisterType")
 			{
-				if (debug)
+				if (showDebugInfo)
 				{
 					trace(LocalNotify+" Send to:"+args[0]+" mode:"+args[1]+" type:"+args[2]+" target:"+args[4]);
 				}
@@ -191,7 +191,7 @@ package com.msuo.net.localNotify
 			}
 			else
 			{
-				if (debug)
+				if (showDebugInfo)
 				{
 					trace(LocalNotify+" Send to:"+args[0]+" mode:"+args[1]+" type:"+args[2]);
 				}
