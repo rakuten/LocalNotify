@@ -105,7 +105,7 @@ package com.msuo.net.localNotify
 		
 		/**
 		 * 发送一段文本
-		 * @param id 另一头侦听者的id
+		 * @param id remote LocalNotify id
 		 * @param msg
 		 *
 		 */
@@ -116,7 +116,7 @@ package com.msuo.net.localNotify
 		
 		/**
 		 * 发送一个对象或类实例
-		 * @param id 另一头侦听者的id
+		 * @param id remote LocalNotify id
 		 * @param item
 		 * @param param
 		 *
@@ -130,7 +130,7 @@ package com.msuo.net.localNotify
 		
 		/**
 		 * 发送一个事件
-		 * @param id 另一头侦听者的id
+		 * @param id remote LocalNotify id
 		 * @param type 等同于event.type的值
 		 * @param item 可以附带的event的变量(可以是值对象或是构造时不带变量的类)
 		 *
@@ -256,7 +256,7 @@ package com.msuo.net.localNotify
 //                trace("LocalNotify send() succeeded:"+serverId);
 					break;
 				case "error":
-					trace(LocalNotify+" send failed:"+serverId);
+					trace(LocalNotify+" send failed: to"+serverId);
 					break;
 			}
 			
