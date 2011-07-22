@@ -6,24 +6,24 @@ package com.msuo.net.localNotify
 	import flash.net.registerClassAlias;
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedClassName;
-	
+
 	/**
 	 * 收到对象或类实例时派发
 	 */
 	[Event(name="objectInfo", type="com.msuo.net.localNotify.LocalNotifyEvent")]
-	
+
 	/**
 	 * 收到文字对象时派发
 	 */
 	[Event(name="textInfo", type="com.msuo.net.localNotify.LocalNotifyEvent")]
-	
+
 	/**
 	 * 收到事件类消息时派发
 	 */
 	[Event(name="eventInfo", type="com.msuo.net.localNotify.LocalNotifyEvent")]
-	
+
 	[Event(name="commandInfo", type="com.msuo.net.localNotify.LocalNotifyEvent")]
-	
+
 	/**
 	 * LocalConnection的扩展实现，既可以发送文本，也可以发送Object或类的实例
 	 * @author austin
@@ -42,7 +42,7 @@ package com.msuo.net.localNotify
 		public function LocalNotify()
 		{
 		}
-		
+
 		//==========================================================================
 		//  Variables
 		//==========================================================================
@@ -50,16 +50,16 @@ package com.msuo.net.localNotify
 		 * 是否显示debug信息
 		 */
 		public var showDebugInfo:Boolean = false;
-		
+
 		private var serverLC:LocalConnection;
 		private var serverId:String;
 		private var typeLib:Object = {};
-		
-		
+
+
 		//==========================================================================
 		//  Methods
 		//==========================================================================
-		
+
 		/**
 		 * 建立LC侦听
 		 * @param id 客户端唯一标识
@@ -81,7 +81,7 @@ package com.msuo.net.localNotify
 				trace(LocalNotify+" 侦听出错:" + error.message);
 			}
 		}
-		
+
 		/**
 		 * 断开LC的侦听连接
 		 *
@@ -102,7 +102,7 @@ package com.msuo.net.localNotify
 			}
 			serverLC = null;
 		}
-		
+
 		/**
 		 * 发送一段文本
 		 * @param id remote LocalNotify id
@@ -113,7 +113,7 @@ package com.msuo.net.localNotify
 		{
 			sendHandler(id, "onGetMsgHandler", msg, serverId, null);
 		}
-		
+
 		/**
 		 * 发送一个对象或类实例
 		 * @param id remote LocalNotify id
@@ -123,11 +123,11 @@ package com.msuo.net.localNotify
 		 */
 		public function sendObject(id:String, item:Object, param:String = null):void
 		{
-			parseQualifiedClassName(id, item);
-			
+			sendPreRegister(id, item);
+
 			sendHandler(id, "onGetObjHandler", item, serverId, param);
 		}
-		
+
 		/**
 		 * 发送一个事件
 		 * @param id remote LocalNotify id
@@ -141,16 +141,16 @@ package com.msuo.net.localNotify
 		{
 			if (item)
 			{
-				parseQualifiedClassName(id, item);
+				sendPreRegister(id, item);
 			}
 			sendHandler(id,"onGetEventHandler", type, item, serverId);
 		}
-		
+
 		public function sendCommand(id:String, command:String, data:* = null):void
 		{
 			sendHandler(id, "onGetCommandHandler", command, data, serverId);
 		}
-		
+
 		/**
 		 * 在内容中注册类(发送方和接受方都需注册才有用)
 		 * @param path
@@ -162,8 +162,15 @@ package com.msuo.net.localNotify
 			registerClassAlias(path, classInst);
 			return classInst;
 		}
-		
-		private function parseQualifiedClassName(id:String, obj:*):void
+
+		/**
+		 * 将对象在另一头预注册
+		 * 常用于VO套VO时,被套的那个VO预注册
+		 * @param id
+		 * @param obj
+		 *
+		 */
+		public function sendPreRegister(id:String, obj:*):void
 		{
 			var path:String = getQualifiedClassName(obj);
 			if (path.indexOf("::") > -1)
@@ -171,14 +178,14 @@ package com.msuo.net.localNotify
 				var seperator:int = path.indexOf("::");
 				path = path.substr(0, seperator) + "." +path.substr((seperator + 2), path.length);
 			}
-			
+
 			if (typeLib[id+path] == null)
 			{
 				typeLib[id+path] = preRegisterType(path);
 				serverLC.send(id, "preRegisterType", path);
 			}
 		}
-		
+
 		private function sendHandler(...args):void
 		{
 			if (args[1] != "preRegisterType")
@@ -198,7 +205,7 @@ package com.msuo.net.localNotify
 				serverLC.send(args[0], args[1], args[2]);
 			}
 		}
-		
+
 		/**
 		 * 远端发来的消息将会调用此处
 		 * @param msg
@@ -213,7 +220,7 @@ package com.msuo.net.localNotify
 			event.caller = caller;
 			this.dispatchEvent(event);
 		}
-		
+
 		public function onGetObjHandler(obj:*, caller:String, param:String = null):void
 		{
 			var event:LocalNotifyEvent =
@@ -223,7 +230,7 @@ package com.msuo.net.localNotify
 			event.caller = caller;
 			this.dispatchEvent(event);
 		}
-		
+
 		public function onGetEventHandler(type:String, obj:*, caller:String):void
 		{
 			var event:LocalNotifyEvent =
@@ -233,7 +240,7 @@ package com.msuo.net.localNotify
 			event.caller = caller;
 			this.dispatchEvent(event);
 		}
-		
+
 		public function onGetCommandHandler(type:String, obj:*, caller:String):void
 		{
 			var event:LocalNotifyEvent =
@@ -243,8 +250,8 @@ package com.msuo.net.localNotify
 			event.caller = caller;
 			this.dispatchEvent(event);
 		}
-		
-		
+
+
 		//==========================================================================
 		//  Event Handlers
 		//==========================================================================
@@ -259,7 +266,7 @@ package com.msuo.net.localNotify
 					trace(LocalNotify+" send failed: to"+serverId);
 					break;
 			}
-			
+
 		}
 	}
 }
